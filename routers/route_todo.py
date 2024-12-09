@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi import Request, Response, HTTPException
 from fastapi.encoders import jsonable_encoder
-from database import db_create_todo, db_get_todos, db_get_single_todo
+from database import db_create_todo, db_get_todos, db_get_single_todo, db_update_todo
 from schemas import Todo, TodoBody
 from starlette.status import HTTP_201_CREATED
 from typing import List
@@ -28,3 +28,11 @@ async def get_single_todo(id: str):
   if todo:
     return todo
   raise HTTPException(status_code=404, detail=f"Task of ID:{id} doesn't exist")
+
+@router.put("/api/todos/{id}", response_model=Todo)
+async def update_todo(id: str, data: TodoBody):
+  todo = jsonable_encoder(data)
+  updated_todo = await db_update_todo(id, todo)
+  if updated_todo:
+    return updated_todo
+  raise HTTPException(status_code=404, detail="Update task failed")
