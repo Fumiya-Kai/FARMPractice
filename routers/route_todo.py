@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from fastapi import Request, Response, HTTPException
 from fastapi.encoders import jsonable_encoder
-from database import db_create_todo, db_get_todos, db_get_single_todo, db_update_todo
-from schemas import Todo, TodoBody
+from database import db_create_todo, db_get_todos, db_get_single_todo, db_update_todo, db_delete_todo
+from schemas import Todo, TodoBody, SuccessMsg
 from starlette.status import HTTP_201_CREATED
 from typing import List
 
@@ -36,3 +36,10 @@ async def update_todo(id: str, data: TodoBody):
   if updated_todo:
     return updated_todo
   raise HTTPException(status_code=404, detail="Update task failed")
+
+@router.delete("/api/todos/{id}", response_model=SuccessMsg)
+async def update_todo(id: str):
+  deleted_todo = await db_delete_todo(id)
+  if deleted_todo:
+    return {"message": "Successfully deleted"}
+  raise HTTPException(status_code=404, detail="Delete task failed")
