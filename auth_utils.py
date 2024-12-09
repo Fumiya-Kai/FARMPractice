@@ -19,7 +19,7 @@ class AuthJwtCsrf():
   def encode_jwt(self, email) -> str:
     payload = {
       "exp": datetime.now(timezone.utc) + timedelta(days=0, minutes=5),
-      "iat": datetime.utnow(),
+      "iat": datetime.now(timezone.utc),
       "sub": email
     }
     return jwt.encode(
