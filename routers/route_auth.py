@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from fastapi import Request, Response
+from fastapi import Request, Response, Depends
 from fastapi.encoders import jsonable_encoder
-from schemas import UserBody, SuccessMsg, UserInfo
+from fastapi_csrf_protect import CsrfProtect
+from schemas import UserBody, SuccessMsg, UserInfo, Csrf
 from database import (
   db_signup,
   db_login
@@ -10,6 +11,12 @@ from auth_utils import AuthJwtCsrf
 
 router = APIRouter()
 auth = AuthJwtCsrf()
+
+@router.get("/api/csrftoken", response_model=Csrf)
+def get_csrf_token(csrf_protect: CsrfProtect = Depends()):
+  csrf_token = csrf_protect.generate_csrf()
+  res = {'csrf_token': csrf_token}
+  return res
 
 @router.post("/api/register", response_model=UserInfo)
 async def signup(user: UserBody):
